@@ -1,0 +1,9 @@
+#!/bin/sh
+TEMP=`mktemp`
+dd of=$TEMP > /dev/null 2>&1
+TEMPDIR=`mktemp -d`
+unzip -oq $TEMP -d $TEMPDIR   # Extract the file
+cat $TEMPDIR/ppt/slides/slide*.xml | tr "<" "\012" | grep ^a:t | cut '-d>' -f2, | uniq | sed '/^$/ d'
+rm $TEMP
+rm -r $TEMPDIR   #Delete excess (formatting) folders
+

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+TEMP_IN=`mktemp`
+TEMP_OUT=`mktemp`
+
+# copy stdin to tmp file ignoring any errors from dd
+dd of=$TEMP_IN 2> /dev/null
+
+wvText $TEMP_IN $TEMP_OUT 
+cat $TEMP_OUT | sed '/^$/ d'
+rm $TEMP_IN $TEMP_OUT

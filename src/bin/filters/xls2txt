@@ -1,0 +1,5 @@
+#!/bin/sh
+TEMP=`mktemp`
+dd of=$TEMP > /dev/null 2>&1
+java -jar jxl.jar -csv $TEMP | grep -v "*** Sheet" 
+rm $TEMP

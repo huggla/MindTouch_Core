@@ -1,0 +1,2 @@
+#!/bin/sh
+html2text -nobs - - | sed '$d' | sed '1d' | sed '/^$/d'  # trim first, last and blank lines

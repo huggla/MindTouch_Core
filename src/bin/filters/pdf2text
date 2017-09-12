@@ -1,0 +1,6 @@
+#!/bin/sh
+# save stdin to a file since pdftohtml doesn't work on streams
+TEMP=`mktemp`
+dd of=$TEMP 2> /dev/null
+pdftohtml -stdout -i -noframes "$TEMP" | html2text -nobs - - | sed '/^[\=]\+/ d' |sed '$d' | sed '1d' | sed '/^$/d'  # trim first, last and blank lines
+rm $TEMP

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Setting PATH
+PATH=$PATH:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+export PATH
+
+# uncomment JAVA_HOME if you'd like to use a different JVM or your JAVA_HOME isn't set
+#export JAVA_HOME=/usr/lib/j2sdk1.4-sun
+DIR=`dirname $0`;
+TEMP=`mktemp`
+dd of=$TEMP > /dev/null 2>&1
+java -jar $DIR/jxl.jar -csv $TEMP 2> /dev/null| grep -v "*** Sheet" 
+rm $TEMP

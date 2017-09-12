@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Setting PATH
+PATH=$PATH:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+export PATH
+
+TEMP_IN=`mktemp`
+TEMP_OUT=`mktemp`
+
+# copy stdin to tmp file ignoring any errors from dd
+dd of=$TEMP_IN 2> /dev/null
+
+wvHtml $TEMP_IN $TEMP_OUT 
+cat $TEMP_OUT | html2text -nobs - - | sed -e '/^$/d' -e '/^#\{6\} - #\{6\}$/d' 
+rm $TEMP_IN $TEMP_OUT

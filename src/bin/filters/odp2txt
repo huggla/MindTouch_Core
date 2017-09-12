@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# save stdin to a file since unzip doesn't work on streams
+TEMP=`mktemp`
+dd of=$TEMP 2> /dev/null
+TEMPDIR=`mktemp -d`
+unzip -oq $TEMP -d $TEMPDIR   # Extract the file
+tr "<" "\012" < $TEMPDIR/content.xml | egrep '^text:p|text:span' \
+	| cut '-d>' -f2, | uniq | sed '/^$/ d'
+rm $TEMP
+rm -r $TEMPDIR   #Delete excess (formatting) folders

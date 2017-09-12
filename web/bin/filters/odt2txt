@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Setting PATH
+PATH=$PATH:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+export PATH
+
+# save stdin to a file since unzip doesn't work on streams
+TEMP=`mktemp`
+dd of=$TEMP > /dev/null 2>&1
+echo $TEMP >> /tmp/converter.log
+TEMPDIR=`mktemp -d`
+unzip -oq $TEMP -d $TEMPDIR   # Extract the file
+tr "<" "\012" < $TEMPDIR/content.xml | grep ^text | cut '-d>' -f2, | uniq | sed '/^$/ d'
+rm $TEMP
+rm -rf $TEMPDIR

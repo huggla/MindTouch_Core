@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# The converter script requires the 'unrtf' binary 
+# To install, run:  apt-get install unrtf
+
+# Setting PATH
+PATH=$PATH:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+export PATH
+
+# save stdin to a file since unrtfp doesn't work on streams
+TEMP=`mktemp`
+dd of=$TEMP 2> /dev/null
+
+unrtf --text "$TEMP"  | sed -e '/^###/d' -e 's/### invalid font number [0-9]\+//'
+rm $TEMP

@@ -1,0 +1,6 @@
+#!/bin/sh
+# save stdin to a file since ppthtml can't read stdin
+TEMP_IN=`mktemp`
+dd of=$TEMP_IN > /dev/null 2>&1
+ppthtml $TEMP_IN | html2text -nobs - - | sed '$d' | sed '$d' | sed '$d' | sed '1d' | sed '/^$/d' | sed '/[\=]\+/ d'  # trim first, last and blank lines
+rm $TEMP_IN

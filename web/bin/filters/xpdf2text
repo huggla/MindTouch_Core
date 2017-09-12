@@ -1,0 +1,13 @@
+#!/bin/sh 
+
+# Setting PATH
+PATH=$PATH:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+export PATH
+
+# save stdin to a file since pdftotext doesn't work on streams
+TEMP=`mktemp` 
+dd of=$TEMP 2> /dev/null
+# convert PDF to text and output to stdout (-), strip blank lines 
+pdftotext -eol unix -enc UTF-8 "$TEMP" - | sed '/^$/d' 
+# cleanup 
+rm $TEMP 
