@@ -583,6 +583,10 @@ incompatible with PHP4
                 flush privileges;
                 quit
     
+    Ubuntu 16.04:
+      * sudo apt-get install mono-complete
+      * follow instructions above.
+    
     ----------------------
 5.  Upgrade Guide
     ----------------------
