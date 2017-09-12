@@ -468,8 +468,120 @@ incompatible with PHP4
     ----------------------
 4.  Install Guide
     ----------------------
+
+    (http://developer.mindtouch.com/Deki_Wiki/Installation_and_Upgrade)
     
-    http://developer.mindtouch.com/Deki_Wiki/Installation_and_Upgrade
+    Windows Server 2016: http://resurrectingdekiwiki.blogspot.com/
+    
+    Ubuntu 14.04:
+      * sudo apt-get install \
+	    php5-mysql \
+	    php5-mcrypt \
+	    php5-gd \
+	    php5-curl \
+	    imagemagick \
+	    wv \
+	    poppler-utils \
+	    html2text \
+	    html2ps \
+	    htmldoc \
+	    aspell \
+	    links \
+	    ttf-mscorefonts-installer \
+            mono-gac \
+            mono-devel \
+            mysql-server \
+      * Set Mysql root password to "password".
+      * Download Prince XML for Ubuntu 14.04 from http://www.princexml.com/download/ (f ex: wget http://www.princexml.com/download/prince_9.0-5_ubuntu14.04_amd64.deb).
+      * sudo dpkg -i prince_x.x-x_ubuntu14.04_xxx.deb
+      * Download/clone Mindtouch Core (and unzip).
+      * Copy the web directory to your web root, rename it dekiwiki.
+      * sudo cp config/deki-apache.conf /etc/apache2/sites-available/dekiwiki
+      * Edit /etc/apache2/sites-available/dekiwiki to look something like this:
+
+        <VirtualHost *:80>
+            ServerName dekiwiki
+            DirectoryIndex index.php
+            # Max upload size ~200MB
+            FcgidMaxRequestLen 200000000
+            ErrorLog /var/log/apache2/error-dekiwiki.log
+            LogLevel error
+            #CustomLog /var/log/apache2/access-dekiwiki.log common
+            RewriteEngine On
+            RewriteCond %{REQUEST_URI} ^/$
+            RewriteRule ^/$ /index.php?title= [L,QSA,NE]
+            RewriteCond %{REQUEST_URI} !^/(@api|editor|skins|config|deki)/
+            RewriteCond %{REQUEST_URI} !^/index\.php
+            RewriteCond %{REQUEST_URI} !^/favicon\.ico$
+            RewriteCond %{REQUEST_URI} !^/robots\.txt$
+            RewriteCond %{REQUEST_URI} !^/error/(.*)\.var$
+            RewriteCond %{QUERY_STRING} ^$ [OR] %{REQUEST_URI} ^/Special:Search
+            RewriteRule ^/(.*)$ /index.php?title=$1 [L,QSA,NE]
+            # Bug: 5252 https rewrite/proxy rules
+            RewriteCond %{HTTPS} =on
+            RewriteCond %{REQUEST_URI} ^/@api/
+            RewriteCond %{QUERY_STRING} !^(.*)dream.in.scheme= [NC]
+            RewriteRule ^/@api/(.*)$ http://localhost:8081/$1?dream.in.scheme=https [QSA,P,L]
+            RewriteCond %{HTTPS} =on
+            RewriteCond %{REQUEST_URI} ^/@api/
+            RewriteCond %{QUERY_STRING} ^(.*)dream.in.scheme= [NC]
+            RewriteRule ^/@api/(.*)$ http://localhost:8081/$1 [QSA,P,L]
+            # End Bug: 5252
+            # deki-api uses encoded slashes in query parameters so AllowEncodedSlashes must be On
+            AllowEncodedSlashes On  
+            # mod_proxy rules
+            ProxyPass /@api http://localhost:8081 retry=1
+            ProxyPassReverse /@api http://localhost:8081
+            SetEnv force-proxy-request-1.0 1
+            SetEnv proxy-nokeepalive 1
+            <Proxy *>
+                AddDefaultCharset off
+                Require ip 127.0.0.0/255.0.0.0 ::1/128 10.0.0.0/8
+            </Proxy>
+            ScriptAlias /cgi-bin/ "/usr/lib/cgi-bin/"
+            <Directory "/usr/lib/cgi-bin/">
+                AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Require ip 127.0.0.0/255.0.0.0 ::1/128 10.0.0.0/8
+            </Directory>
+            DocumentRoot /var/www/dekiwiki
+            <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+                Require ip 127.0.0.0/255.0.0.0 ::1/128
+            </Directory>
+            <Directory /var/www/dekiwiki>
+                AddHandler fcgid-script .php
+                FCGIWrapper /usr/lib/cgi-bin/php5 .php
+                Options ExecCGI SymLinksIfOwnerMatch
+                AllowOverride All
+                Require ip 127.0.0.0/255.0.0.0 ::1/128 10.0.0.0/8
+            </Directory>
+        </VirtualHost>
+	
+      * sudo cp config/dekiwiki-init.debian /etc/init.d/dekiwiki
+      * sudo update-rc.d dekiwiki defaults
+      * sudo a2ensite dekiwiki
+      * sudo a2enmod rewrite
+      * sudo mkdir /var/log/dekiwiki
+      * sudo touch /var/log/dekiwiki/deki-api.log
+      * sudo chown www-data /var/log/dekiwiki/deki-api.log
+      * sudo mkdir /var/www/.wapi
+      * sudo chown www-data /var/www/.wapi
+      * sudo su www-data
+            mozroots --import --sync
+            exit
+      * sudo mkdir /etc/dekiwiki
+      * sudo chown www-data /etc/dekiwiki
+      * Reboot
+      * Open http://sbkwiki/config/index.php in browser and follow the instructions.
+      * sudo service dekiwiki start
+      * Change Mysql root password!:
+            mysql --user=root --password=password
+                use mysql;
+                update user set password=PASSWORD("yournewpassw") where User='root';
+                flush privileges;
+                quit
     
     ----------------------
 5.  Upgrade Guide
