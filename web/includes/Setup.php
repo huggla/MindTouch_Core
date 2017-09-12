@@ -245,10 +245,11 @@ if (!$wgConfiguring) {
 }
 
 if (!$wgConfiguring) {
-	if(!empty($wgDBport))
-		$wgDBserver .= ':'.$wgDBport; 
-
-	$wgDatabase = Database::newFromParams( $wgDBserver, $wgDBuser, $wgDBpassword, $wgDBname );
+	if(empty($wgDBport))
+	{
+		$wgDBport .= '3306';
+	}
+	$wgDatabase = Database::newFromParams( $wgDBserver, $wgDBuser, $wgDBpassword, $wgDBname, $wgDBport );
 }
 
 wfProfileOut( $fname.'-database');

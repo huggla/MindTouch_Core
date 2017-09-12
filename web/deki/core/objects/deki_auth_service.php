@@ -53,7 +53,7 @@ class DekiAuthService extends DekiService implements IDekiApiObject
 		return DekiService::load(self::INTERNAL_AUTH_ID);
 	}
 
-	static function getSiteList($isRunning = true)
+	static function getSiteList($typeFilter = NULL, $isRunning = true)
 	{
 		return DekiService::getSiteList(self::TYPE_AUTH, $isRunning);
 	}

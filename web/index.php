@@ -145,7 +145,7 @@ else
 	if (NS_SPECIAL == $wgTitle->getNamespace())
 	{
 		// actions that need to be made when we have a special pages
-		$bits = split("/", $wgTitle->getDBkey(), 2);
+		$bits = preg_split("/\//", $wgTitle->getDBkey(), 2);
 		$name = $bits[0];
 		if (!isset($bits[1])) // bug 2087
 		{

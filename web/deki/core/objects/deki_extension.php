@@ -50,7 +50,7 @@ class DekiExtension extends DekiService implements IDekiApiObject
 	private $functions = '';
 
 
-	static function getSiteList($isRunning = null)
+	static function getSiteList($typeFilter = NULL, $isRunning = null)
 	{
 		return DekiService::getSiteList(self::TYPE_EXTENSION, $isRunning);
 	}

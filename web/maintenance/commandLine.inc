@@ -24,8 +24,8 @@ if ( !isset( $optionsWithArgs ) ) {
 	$optionsWithArgs = array();
 }
 
-$IP = realpath( dirname( __SELF__ ) . "/.." );
-//$IP = getcwd(); // use getcwd so the right path is returned if we're using symlinks
+//$IP = realpath( dirname( __SELF__ ) . "/.." );
+$IP = getcwd(); // use getcwd so the right path is returned if we're using symlinks
 // < DekiFarm
 chdir( $IP );
 

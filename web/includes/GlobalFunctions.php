@@ -93,10 +93,12 @@ function do_html_entity_decode( $string, $quote_style=ENT_COMPAT, $charset='ISO-
         foreach( $trans as $key => $val ) {
             $snip[] = substr( $key, 1, -1 );
         }
-        $regexp = '/(&(?:' . implode( '|', $snip ) . ');)/e';
+        $regexp = '/(&(?:' . implode( '|', $snip ) . ');)/';
     }
 
-    $out = preg_replace( $regexp, '$trans["$1"]', $string );
+    $out = preg_replace_callback( $regexp, function ($matches) {
+        return $trans["$matches[1]"];
+    }, $string );
     
     return $out;
 }
@@ -158,16 +160,24 @@ function wfUtf8Sequence( $codepoint ) {
 function wfMungeToUtf8( $string ) {
     global $wgInputEncoding; # This is debatable
     #$string = iconv($wgInputEncoding, "UTF-8", $string);
-    $string = preg_replace ( '/&#0*([0-9]+);/e', 'wfUtf8Sequence($1)', $string );
-    $string = preg_replace ( '/&#x([0-9a-f]+);/ie', 'wfUtf8Sequence(0x$1)', $string );
+    $string = preg_replace_callback ( '/&#0*([0-9]+);/', function ($matches) {
+        return wfUtf8Sequence($matches[1]);
+    }, $string );
+    $string = preg_replace_callback ( '/&#x([0-9a-f]+);/i', function ($matches) {
+        return wfUtf8Sequence("0x$matches[1]");
+    }, $string );
     # Should also do named entities here
     return $string;
 }
 
 function wfHtmlStringLength($string) {
     $string = do_html_entity_decode( $string );
-    $string = preg_replace ( '/&#0*([0-9]+);/e', '_', $string );
-    $string = preg_replace ( '/&#x([0-9a-f]+);/ie', '_', $string );
+    $string = preg_replace_callback ( '/&#0*([0-9]+);/', function ($matches) {
+        return '_'.$matches[0];
+    }, $string );
+    $string = preg_replace_callback ( '/&#x([0-9a-f]+);/i', function ($matches) {
+        return '_'.$matches[0];
+    }, $string );
     return strlen($string);
 }
 
@@ -188,7 +198,9 @@ function wfUtf8Entity( $matches ) {
  * character entity
  */
 function wfUtf8ToHTML($string) {
-    return preg_replace_callback( '/[\\xc0-\\xfd][\\x80-\\xbf]*/', 'wfUtf8Entity', $string );
+    return preg_replace_callback( '/[\\xc0-\\xfd][\\x80-\\xbf]*/', function ($matches) {
+        return wfUtf8Entity($matches[0]);
+    }, $string );
 }
 
 /**
@@ -851,7 +863,7 @@ function wfIncrStats( $key ) {
  * http://www.ilovejackdaniels.com/php/email-address-validation
  */
 function wfValidateEmail($email) {
-	if (!ereg("[^@]{1,64}@[^@]{1,255}", $email)) {     
+	if (!preg_match("[^@]{1,64}@[^@]{1,255}", $email)) {     
 		return false;
 	}
 	# Split it into sections to make life easier

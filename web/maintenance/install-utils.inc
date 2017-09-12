@@ -196,6 +196,7 @@ function install_raise_memory_limit()
 {
 	//todo: is this really necessary?
 	$memlimit = ini_get( "memory_limit" );
+	$conf = new stdClass();
 	$conf->raiseMemory = false;
 	if( empty( $memlimit ) || $memlimit == -1 ) {
 	} else {

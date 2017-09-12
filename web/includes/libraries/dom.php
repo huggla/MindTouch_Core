@@ -147,7 +147,7 @@ class DomFragment extends DwDomElement
 		return $this;
 	}
 
-	public function saveHtml()
+	public function &saveHtml()
 	{
 		$html = parent::saveHtml();
 

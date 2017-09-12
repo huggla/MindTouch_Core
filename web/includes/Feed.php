@@ -41,8 +41,9 @@ class MTFeed {
 	var $PageId;
 	var $Contents;
 	var $Language;
+	var $Format2;
 
-	function MTFeed( $FeedType, $Since = '', $Max = 0, $Offset = 0, $Format = 'atom', $UserId = 0, $PageId = 0, $Language = null, $Format = 'daily') {
+	function MTFeed( $FeedType, $Since = '', $Max = 0, $Offset = 0, $Format = 'atom', $UserId = 0, $PageId = 0, $Language = null, $Format2 = 'daily') {
 		$this->FeedType = $FeedType;
 		$this->Since = $Since;
 		$this->Max = $Max;
@@ -51,7 +52,7 @@ class MTFeed {
 		$this->UserId = $UserId;
 		$this->PageId = $PageId;
 		$this->Language = $Language;
-		$this->Format = $Format;
+		$this->Format = $Format2;
 	}
 
 	function getFeedContents() {

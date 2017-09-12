@@ -204,7 +204,7 @@ $wgSMTP				= false;
 $wgDBserver         = 'localhost';
 
 /** database port */
-$wgDBport           = 3306;
+$wgDBport           = '3306';
 
 /** name of the database */
 $wgDBname           = 'wikidb';

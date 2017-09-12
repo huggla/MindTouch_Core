@@ -125,7 +125,7 @@ class DekiInstaller extends DekiInstallerEnvironment
 			'mb_strtoupper' => 'Page.Install.check-mb-fail', 
 			'session_name' => 'Page.Install.check-session-fail', 
 			'preg_match' => 'Page.Install.check-preg-fail', 
-			'mysql_connect' => 'Page.Install.check-mysql-fail', 
+			'mysqli_connect' => 'Page.Install.check-mysql-fail',
 			'curl_init' => 'Page.Install.check-curl-fail',
 			'gd_info' => 'Page.Install.check-gd-fail', 
 		);

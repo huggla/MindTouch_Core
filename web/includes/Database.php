@@ -157,7 +157,7 @@ class Database {
 	 * @param $flags
 	 * @param string $tablePrefix Database table prefixes. By default use the prefix gave in LocalSettings.php
 	 */
-	function Database( $server = false, $user = false, $password = false, $dbName = false, 
+	function Database( $server = false, $user = false, $password = false, $dbName = false, $dbPort = false,
 		$failFunction = false, $flags = 0, $tablePrefix = 'get from global' ) {
 		
 		global $wgOut, $wgDBprefix, $wgCommandLineMode;
@@ -186,7 +186,7 @@ class Database {
 		}
 
 		if ( $server ) {
-			$this->open( $server, $user, $password, $dbName );
+			$this->open( $server, $user, $password, $dbName, $dbPort );
 		}
 	}
 	
@@ -195,25 +195,25 @@ class Database {
 	 * @param failFunction
 	 * @param $flags
 	 */
-	function newFromParams( $server, $user, $password, $dbName, 
+	function newFromParams( $server, $user, $password, $dbName, $dbPort,
 		$failFunction = false, $flags = 0 )
 	{
-		return new Database( $server, $user, $password, $dbName, $failFunction, $flags );
+		return new Database( $server, $user, $password, $dbName, $dbPort, $failFunction, $flags );
 	}
 	
 	/**
 	 * Usually aborts on failure
 	 * If the failFunction is set to a non-zero integer, returns success
 	 */
-	function open( $server, $user, $password, $dbName ) {
+	function open( $server, $user, $password, $dbName, $dbPort ) {
 		# Test for missing mysql.so
 		# First try to load it
-		if (!@extension_loaded('mysql')) {
-			@dl('mysql.so');
+		if (!@extension_loaded('mysqli')) {
+			@dl('mysqli.so');
 		}
 
 		# Otherwise we get a suppressed fatal error, which is very hard to track down
-		if ( !function_exists( 'mysql_connect' ) ) {
+		if ( !function_exists( 'mysqli_connect' ) ) {
 			die( "MySQL functions missing, have you compiled PHP with the --with-mysql option?\n" );
 		}
 		
@@ -222,18 +222,19 @@ class Database {
 		$this->mUser = $user;
 		$this->mPassword = $password;
 		$this->mDBname = $dbName;
+		$this->mDBport = $dbPort;
 		
 		$success = false;
 		
 		if ( $this->mFlags & DBO_PERSISTENT ) {
-			@/**/$this->mConn = mysql_pconnect( $server, $user, $password );
+			@/**/$this->mConn = mysqli_connect( 'p:'.$server, $user, $password, $dbName, $dbPort );
 		} else {
-			@/**/$this->mConn = mysql_connect( $server, $user, $password );
+			@/**/$this->mConn = mysqli_connect( $server, $user, $password, $dbName, $dbPort );
 		}
 
 		if ( $dbName != '' ) {
 			if ( $this->mConn !== false ) {
-				$success = @/**/mysql_select_db( $dbName, $this->mConn );
+				$success = @/**/mysqli_select_db( $this->mConn, $dbName );
 				if ( !$success ) {
 					wfDebug( "Error selecting database \"$dbName\": " . $this->lastError() . "\n" );
 				}
@@ -276,7 +277,7 @@ class Database {
 			if ( $this->trxLevel() ) {
 				$this->immediateCommit();
 			}
-			return mysql_close( $this->mConn );
+			return mysqli_close( $this->mConn );
 		} else {
 			return true;
 		}
@@ -291,10 +292,10 @@ class Database {
 		if ( $this->mFailFunction ) {
 			if ( !is_int( $this->mFailFunction ) ) {
 				$ff = $this->mFailFunction;
-				$ff( $this, mysql_error() );
+				$ff( $this, mysqli_connect_error() );
 			}
 		} else {
-			wfEmergencyAbort( $this, mysql_error() );
+			wfEmergencyAbort( $this, mysqli_connect_error() );
 		}
 	}
 	
@@ -366,9 +367,9 @@ class Database {
 	 */
 	function doQuery( $sql ) {
 		if( $this->bufferResults() ) {
-			$ret = mysql_query( $sql, $this->mConn );
+			$ret = mysqli_query( $this->mConn, $sql );
 		} else {
-			$ret = mysql_unbuffered_query( $sql, $this->mConn );
+			$ret = mysqli_query( $this->mConn, $sql, MYSQLI_USE_RESULT );
 		}
 		return $ret;
 	}
@@ -511,8 +512,8 @@ class Database {
 	 * Free a result object
 	 */
 	function freeResult( $res ) {
-		if ( !@/**/mysql_free_result( $res ) ) {
-			wfDebugDieBacktrace( "Unable to free MySQL result\n" );
+		if ( !@/**/mysqli_free_result( $res ) ) {
+			//wfDebugDieBacktrace( "Unable to free MySQL result\n" );
 		}
 	}
 	
@@ -520,9 +521,9 @@ class Database {
 	 * Fetch the next row from the given result object, in object form
 	 */
 	function fetchObject( $res ) {
-		@/**/$row = mysql_fetch_object( $res );
-		if( mysql_errno() ) {
-			wfDebugDieBacktrace( 'Error in fetchObject(): ' . htmlspecialchars( mysql_error() ) );
+		@/**/$row = mysqli_fetch_object( $res );
+		if( mysqli_errno($this->mConn) ) {
+			wfDebugDieBacktrace( 'Error in fetchObject(): ' . htmlspecialchars( mysqli_error() ) );
 		}
 		return $row;
 	}
@@ -534,9 +535,9 @@ class Database {
 	 * @return array
 	 */
 	function fetchArray( $res ) {
-		@/**/$row = mysql_fetch_assoc( $res );
-		if( mysql_errno() ) {
-			wfDebugDieBacktrace( 'Error in fetchObject(): ' . htmlspecialchars( mysql_error() ) );
+		@/**/$row = mysqli_fetch_assoc( $res );
+		if( mysqli_errno($this->mConn) ) {
+			wfDebugDieBacktrace( 'Error in fetchObject(): ' . htmlspecialchars( mysqli_error() ) );
 		}
 		return $row;
 	}
@@ -545,9 +546,9 @@ class Database {
 	 * Returns an array
 	 */
  	function fetchRow( $res ) {
-		@/**/$row = mysql_fetch_array( $res );
-		if (mysql_errno() ) {
-			wfDebugDieBacktrace( 'Error in fetchRow(): ' . htmlspecialchars( mysql_error() ) );
+		@/**/$row = mysqli_fetch_array( $res );
+		if (mysqli_errno($this->mConn) ) {
+			wfDebugDieBacktrace( 'Error in fetchRow(): ' . htmlspecialchars( mysqli_error() ) );
 		}
 		return $row;
 	}	
@@ -556,24 +557,24 @@ class Database {
 	 * Get the number of rows in a result object
 	 */
 	function numRows( $res ) {
-		@/**/$n = mysql_num_rows( $res ); 
-		if( mysql_errno() ) {
-			wfDebugDieBacktrace( 'Error in numRows(): ' . htmlspecialchars( mysql_error() ) );
+		@/**/$n = mysqli_num_rows( $res );
+		if( mysqli_errno($this->mConn) ) {
+			wfDebugDieBacktrace( 'Error in numRows(): ' . htmlspecialchars( mysqli_error() ) );
 		}
 		return $n;
 	}
 	
 	/**
 	 * Get the number of fields in a result object
-	 * See documentation for mysql_num_fields()
+	 * See documentation for mysqli_num_fields()
 	 */
-	function numFields( $res ) { return mysql_num_fields( $res ); }
+	function numFields( $res ) { return mysqli_num_fields( $res ); }
 
 	/**
 	 * Get a field name in a result object
-	 * See documentation for mysql_field_name()
+	 * See documentation for mysqli_fetch_field_direct()
 	 */
-	function fieldName( $res, $n ) { return mysql_field_name( $res, $n ); }
+	function fieldName( $res, $n ) { return mysqli_fetch_field_direct( $res, $n )[name]; }
 
 	/**
 	 * Get the inserted value of an auto-increment row
@@ -585,35 +586,35 @@ class Database {
 	 * $dbw->insert('cur',array('page_id' => $id));
 	 * $id = $dbw->insertId();
 	 */
-	function insertId() { return mysql_insert_id( $this->mConn ); }
+	function insertId() { return mysqli_insert_id( $this->mConn ); }
 	
 	/**
 	 * Change the position of the cursor in a result object
-	 * See mysql_data_seek()
+	 * See mysqli_data_seek()
 	 */
-	function dataSeek( $res, $row ) { return mysql_data_seek( $res, $row ); }
+	function dataSeek( $res, $row ) { return mysqli_data_seek( $res, $row ); }
 	
 	/**
 	 * Get the last error number
-	 * See mysql_errno()
+	 * See mysqli_errno()
 	 */
 	function lastErrno() { 
 		if ( $this->mConn ) {
-			return mysql_errno( $this->mConn ); 
+			return mysqli_errno( $this->mConn );
 		} else {
-			return mysql_errno();
+			return mysqli_errno($this->mConn);
 		}
 	}
 	
 	/**
 	 * Get a description of the last error
-	 * See mysql_error() for more details
+	 * See mysqli_error() for more details
 	 */
 	function lastError() { 
 		if ( $this->mConn ) {
-			$error = mysql_error( $this->mConn ); 
+			$error = mysqli_error( $this->mConn );
 		} else {
-			$error = mysql_error();
+			$error = mysqli_error();
 		}
 		if( $error ) {
 			$error .= ' (' . $this->mServer . ')';
@@ -623,9 +624,9 @@ class Database {
 	
 	/**
 	 * Get the number of rows affected by the last write query
-	 * See mysql_affected_rows() for more details
+	 * See mysqli_affected_rows() for more details
 	 */
-	function affectedRows() { return mysql_affected_rows( $this->mConn ); }
+	function affectedRows() { return mysqli_affected_rows( $this->mConn ); }
 	/**#@-*/ // end of template : @param $result
 
 	/**
@@ -905,13 +906,13 @@ class Database {
 	function tableExists( $table ) {
 		$old = $this->ignoreErrors( true );
 		$res = $this->query( "show tables like '".$table."'" );
-		$count = @mysql_num_rows($res);
+		$count = @mysqli_num_rows($res);
 		$this->ignoreErrors( $old );
 		return $count !== false && $count == 1;
 	}
 	
 	/**
-	 * mysql_fetch_field() wrapper
+	 * mysqli_fetch_field() wrapper
 	 * Returns false if the field doesn't exist
 	 *
 	 * @param $table
@@ -920,9 +921,9 @@ class Database {
 	function fieldInfo( $table, $field ) {
 		$table = $this->tableName( $table );
 		$res = $this->query( "SELECT * FROM $table LIMIT 1" );
-		$n = mysql_num_fields( $res );
+		$n = mysqli_num_fields( $res );
 		for( $i = 0; $i < $n; $i++ ) {
-			$meta = mysql_fetch_field( $res, $i );
+			$meta = mysqli_fetch_field( $res, $i );
 			if( $field == $meta->name ) {
 				return $meta;
 			}
@@ -931,10 +932,10 @@ class Database {
 	}
 	
 	/**
-	 * mysql_field_type() wrapper
+	 * mysqli_fetch_field_direct() wrapper
 	 */
 	function fieldType( $res, $index ) {
-		return mysql_field_type( $res, $index );
+		return mysqli_fetch_field_direct( $res, $index )[type];
 	}
 
 	/**
@@ -1055,7 +1056,7 @@ class Database {
 	 */
 	function selectDB( $db ) {
 		$this->mDBname = $db;
-		return mysql_select_db( $db, $this->mConn );
+		return mysqli_select_db( $this->mConn, $db );
 	}
 
 	/**
@@ -1063,9 +1064,9 @@ class Database {
 	 */
 	function startTimer( $timeout ) {
 		global $IP;
-		if( function_exists( 'mysql_thread_id' ) ) {
+		if( function_exists( 'mysqli_thread_id' ) ) {
 			# This will kill the query if it's still running after $timeout seconds.
-			$tid = mysql_thread_id( $this->mConn );
+			$tid = mysqli_thread_id( $this->mConn );
 			exec( "php $IP/includes/killthread.php $timeout $tid &>/dev/null &" );
 		}
 	}
@@ -1528,17 +1529,17 @@ class Database {
 	 * @return string Version information from the database
 	 */
 	function getServerVersion() {
-		return mysql_get_server_info();
+		return mysqli_get_server_info();
 	}
 
 	/**
 	 * Ping the server and try to reconnect if it there is no connection
 	 */
 	function ping() {
-		if( function_exists( 'mysql_ping' ) ) {
-			return mysql_ping( $this->mConn );
+		if( function_exists( 'mysqli_ping' ) ) {
+			return mysqli_ping( $this->mConn );
 		} else {
-			wfDebug( "Tried to call mysql_ping but this is ancient PHP version. Faking it!\n" );
+			wfDebug( "Tried to call mysqli_ping but this is ancient PHP version. Faking it!\n" );
 			return true;
 		}
 	}

@@ -20,7 +20,7 @@ class DekiFileProperties extends DekiProperties
 	 * 
 	 * @return string - returns the key name or null if not a custom key
 	 */
-	public static function getPropertyName($key)
+	public static function getPropertyName($key, $namespace = self::NS_CUSTOM)
 	{
 		return DekiProperties::getPropertyName($key, self::NS_CUSTOM);
 	}
