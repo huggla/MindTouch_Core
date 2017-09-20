@@ -629,7 +629,7 @@ class Language {
 	 *
 	 * @note (guerrics) Function has been updated to work with namespaced keys
 	 */
-	function getMessage($key)
+	public static function getMessage($key)
 	{
 		global $wgAllMessagesEn;
 
