@@ -483,7 +483,7 @@ function install_database($conf)
 	if (!$wgDatabase->isOpen())
 	{
 		$errs["DBserver"] = wfMsg('Page.Install.db-error-connect');
-		continue;
+		//continue;
 	}
 
 	# For error messages
