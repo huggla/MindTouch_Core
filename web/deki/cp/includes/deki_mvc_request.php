@@ -34,7 +34,7 @@ class DekiMvcRequest extends DekiRequest
 	/**
 	 * @param bool $reload - force the request to be a deki mvc request
 	 */
-	static function getInstance($reload = false)
+	static function &getInstance($reload = false)
 	{
 		if (is_null(self::$instance) || $reload)
 		{
