@@ -461,7 +461,7 @@ $wgJavascriptMessages = array();
 #--------------------------------------------------------------------------
 
 class Language {
-	function Language(){
+	function __construct(){
 		# Copies any missing values in the specified arrays from En to the current language
 		$fillin = array( 'wgSysopSpecialPages', 'wgValidSpecialPages', 'wgDeveloperSpecialPages' );
 		$name = get_class( $this );
