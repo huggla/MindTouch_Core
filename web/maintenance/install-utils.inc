@@ -75,6 +75,9 @@ function install_verify_databases($ourdb)
 	$phpdatabases = array();
 	foreach (array_keys($ourdb) as $db) {
 		$compname = $ourdb[$db]['compile'];
+		if ($compname == 'mysql') {
+			$compname = 'mysqli';
+		}
 		if (extension_loaded($compname) or dl($compname . '.' . PHP_SHLIB_SUFFIX)) {
 			array_push($phpdatabases, $db);
 			$ourdb[$db]['havedriver'] = 1;
