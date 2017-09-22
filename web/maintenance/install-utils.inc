@@ -40,7 +40,7 @@ function install_apps_version_check()
 {
 	$return = true;
 	//verify mySQL version
-	$client_ver = mysql_get_client_info();
+	$client_ver = mysqli_get_client_info();
 	// remove mysqlnd from client info string, if found
 	$client_ver = preg_replace('/^mysqlnd /', '', $client_ver);
 	if ( !version_compare($client_ver, REQUIRED_MYSQL_VERSION, ">=")) 
