@@ -103,6 +103,7 @@ class DekiInstaller extends DekiInstallerEnvironment
 	protected function checkDependencies()
 	{
 		$errors = array();
+		$fatal = false;
 		
 		/***
 		 * DEFINE PHP SETTINGS THAT CAUSE THE INSTALLER TO QUIT
