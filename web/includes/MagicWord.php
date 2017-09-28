@@ -119,7 +119,7 @@ class MagicWord {
 	var $mModified;	
 	/**#@-*/
 
-	function MagicWord($id = 0, $syn = '', $cs = false) {
+	function __construct($id = 0, $syn = '', $cs = false) {
 		$this->mId = $id;
 		$this->mSynonyms = (array)$syn;
 		$this->mCaseSensitive = $cs;
