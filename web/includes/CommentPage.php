@@ -30,7 +30,7 @@ class Comment {
 	var $pageid = 0;
 	var $isloaded = false;
 
-	function Comment() {
+	function __construct() {
 		$this->text = '';
 		$this->ownerid = 0;
 		$this->commentnum = 0;
@@ -234,7 +234,7 @@ class CommentPage {
 	var $ignoreWebRequest = false;
 	var $commentnum = 0;
 
-	function CommentPage( $title = null ) {
+	function __construct( $title = null ) {
 		$this->mTitle = $title;
 	}
 
