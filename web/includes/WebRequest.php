@@ -42,7 +42,7 @@
  * @package MediaWiki
  */
 class WebRequest {
-	function WebRequest() {
+	function __construct() {
 		$this->checkMagicQuotes();
 		global $wgUsePathInfo;
 		if( isset( $_SERVER['PATH_INFO'] ) && ($_SERVER['PATH_INFO'] != '') && $wgUsePathInfo ) {
@@ -445,7 +445,7 @@ class FauxRequest extends WebRequest {
 	var $data = null;
 	var $wasPosted = false;
 	
-	function FauxRequest( $data, $wasPosted = false ) {
+	function __construct( $data, $wasPosted = false ) {
 		if( is_array( $data ) ) {
 			$this->data = $data;
 		} else {
