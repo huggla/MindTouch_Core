@@ -70,7 +70,7 @@ class Article {
 	 * Constructor and clear the article
 	 * @param mixed &$title
 	 */
-	function Article( &$title, $mode = 'view' ) {
+	function __construct( &$title, $mode = 'view' ) {
 		$this->mTitle =& $title;
 		$this->clear();
 
