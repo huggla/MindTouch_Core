@@ -56,7 +56,7 @@ class LinkCache {
 		return $wgDBname.':lc:title:'.$title;
 	}
 	
-	function LinkCache() {
+	function __construct() {
 		$this->mActive = true;
 		$this->mPreFilled = false;
 		$this->mForUpdate = false;
