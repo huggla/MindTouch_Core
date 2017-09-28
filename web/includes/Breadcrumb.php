@@ -133,7 +133,7 @@ class breadcrumb {
 	var $dirty;				// bool: session state has changed
 	
 	//--- Constructors ---
-	function breadcrumb($bclen = NULL) {
+	function __construct($bclen = NULL) {
 		global $wgUser;
 	
 		// check if we were given breadcrumbs trail length or if
