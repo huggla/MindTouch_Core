@@ -60,7 +60,7 @@ class Skin {
 	var $postParseLinkColour = false;
 	/**#@-*/
 
-	function Skin() {
+	function __construct() {
 		global $wgContLang;
 		$this->linktrail = $wgContLang->linkTrail();
 
