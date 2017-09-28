@@ -157,7 +157,7 @@ class Database {
 	 * @param $flags
 	 * @param string $tablePrefix Database table prefixes. By default use the prefix gave in LocalSettings.php
 	 */
-	function Database( $server = false, $user = false, $password = false, $dbName = false, $dbPort = false,
+	function __construct( $server = false, $user = false, $password = false, $dbName = false, $dbPort = false,
 		$failFunction = false, $flags = 0, $tablePrefix = 'get from global' ) {
 		
 		global $wgOut, $wgDBprefix, $wgCommandLineMode;
@@ -1600,7 +1600,7 @@ class ResultWrapper {
 	/**
 	 * @todo document
 	 */
-	function ResultWrapper( $database, $result ) {
+	function __construct( $database, $result ) {
 		$this->db =& $database;
 		$this->result =& $result;
 	}
