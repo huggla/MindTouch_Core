@@ -35,7 +35,7 @@ class DwDomElement
 	protected $children = array();
 	protected $attributes = array();
 
-	public function DwDomElement($tag, $value = null)
+	public function __construct($tag, $value = null)
 	{
 		$this->tag = $tag;
 		$this->nodeValue = $value;
@@ -174,7 +174,7 @@ class DomTable extends DwDomElement
 	private $colClassCount = 0;
 
 
-	public function DomTable()
+	public function __construct()
 	{
 		parent::__construct('table');
 
