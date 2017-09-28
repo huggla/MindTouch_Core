@@ -66,7 +66,7 @@ class OutputPage {
 	 * Constructor
 	 * Initialise private variables
 	 */
-	function OutputPage() {
+	function __construct() {
 		$this->mHeaders = $this->mCookies = $this->mMetatags =
 		$this->mKeywords = $this->mLinktags = $this->mCssIncludes = $this->mTags = $this->mRelated = array();
 		$this->mHTMLtitle = $this->mPagetitle = $this->mBodytext = $this->mSubNav = 
