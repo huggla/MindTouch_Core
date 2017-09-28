@@ -66,7 +66,7 @@ class Plug {
 	 * @param string $output, optional, default = 'php'
 	 * @param string $hostname, optional, default = null
 	 */
-	function Plug($uri = null, $output = 'php', $hostname = null) {
+	function __construct($uri = null, $output = 'php', $hostname = null) {
 		// set the actual classname
 		$this->classname = get_class($this);
 
