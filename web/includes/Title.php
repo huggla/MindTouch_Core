@@ -85,7 +85,7 @@ class Title {
 	 * Constructor
 	 * @access private
 	 */
-	/* private */ function Title() {
+	/* private */ function __construct() {
 		$this->mInterwiki = $this->mUrlform =
 		$this->mTextform = $this->mDbkeyform = '';
 		$this->mArticleID = -1;
