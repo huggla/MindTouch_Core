@@ -107,7 +107,7 @@ class Title {
 	 * @static
 	 * @access public
 	 */
-	/* static */ function newFromDBkey( $key ) {
+	public static function newFromDBkey( $key ) {
 		$t = new Title();
 		$t->mDbkeyform = $key;
 		if( $t->secureAndSplit() )
@@ -131,7 +131,7 @@ class Title {
 	 * @static
 	 * @access public
 	 */
-	/* static */ function &newFromText( $text, $defaultNamespace = 0, $context = null ) {	
+	public static function &newFromText( $text, $defaultNamespace = 0, $context = null ) {	
 		// temporary workaround until we fix the core issue
 		if (is_array($text))
 		{
@@ -193,7 +193,7 @@ class Title {
 	 * @static
 	 * @access public
 	 */
-	/* static */ function newFromURL( $url, $context = null ) {
+	public static function newFromURL( $url, $context = null ) {
 		global $wgLang, $wgServer;
 		$t = new Title();
 		
@@ -218,7 +218,7 @@ class Title {
 	 * @return Title the new object, or NULL on an error
 	 * @access public
 	 */
-	/* static */ function newFromID( $id ) {
+	public static function newFromID( $id ) {
 		if(!is_numeric($id)) {
 			return NULL;
 		}
@@ -247,7 +247,7 @@ class Title {
 	 * @static
 	 * @access public
 	 */
-	/* static */ function &makeTitle( $ns, $title, $id = -1 ) {
+	public static function &makeTitle( $ns, $title, $id = -1 ) {
 		$t = new Title();
 		$t->mInterwiki = '';
 		$t->mFragment = '';
@@ -269,7 +269,7 @@ class Title {
 	 * @static
 	 * @access public
 	 */
-	/* static */ function makeTitleSafe( $ns, $title ) {
+	public static function makeTitleSafe( $ns, $title ) {
 		$t = new Title();
 		$t->mDbkeyform = Title::makeName( $ns, $title );
 		if( $t->secureAndSplit() ) {
@@ -287,7 +287,7 @@ class Title {
 	 * @static
 	 * @access public
 	 */
-	/* static */ function newFromRedirect( $text, $followSymbols = true ) {
+	public static function newFromRedirect( $text, $followSymbols = true ) {
 		global $wgMwRedir;
 		$rt = NULL;
 		if ( $wgMwRedir->matchStart( $text ) ) {
@@ -326,7 +326,7 @@ class Title {
 	 * @static
 	 * @access public
 	 */
-	/* static */ function legalChars() {
+	public static function legalChars() {
 		# Missing characters:
 		#  * []|# Needed for link syntax
 		#  * % and + are corrupted by Apache when they appear in the path
@@ -354,7 +354,7 @@ class Title {
 	 * @param string $title the DB key form the title
 	 * @return string the prefixed form of the title
 	 */
-	/* static */ function makeName( $ns, $title ) {
+	public static function makeName( $ns, $title ) {
 		global $wgContLang;
 
 		$n = $wgContLang->getNsText( $ns );
@@ -370,7 +370,7 @@ class Title {
 	* @static (arguably)
 	* @access public
 	*/
-	function getInterwikiLink( $key ) {
+	public static function getInterwikiLink( $key ) {
 		return '';
 	}
 
@@ -382,7 +382,7 @@ class Title {
 	 *	or a wikilink, FALSE otherwise
 	 * @access public
 	 */
-	function isLocal() {
+	public static function isLocal() {
 		return true;
 	}
 
@@ -1069,7 +1069,7 @@ class Title {
 	    return Article::getParentTitleFromTitle($this);
 	}
 		
-	/* static */ function normalizeParentName( $titleName ) {
+	public static function normalizeParentName( $titleName ) {
 		$parts = Article::getParentsFromName( $titleName );
 		$parts_len = count( $parts );
 		
