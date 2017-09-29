@@ -819,7 +819,7 @@ class Database {
 	 * @param string $sql A SQL Query
 	 * @static
 	 */
-	function generalizeSQL( $sql ) {	
+	public static function generalizeSQL( $sql ) {	
 		# This does the same as the regexp below would do, but in such a way
 		# as to avoid crashing php on some large strings.
 		# $sql = preg_replace ( "/'([^\\\\']|\\\\.)*'|\"([^\\\\\"]|\\\\.)*\"/", "'X'", $sql);
