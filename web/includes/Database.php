@@ -195,7 +195,7 @@ class Database {
 	 * @param failFunction
 	 * @param $flags
 	 */
-	function newFromParams( $server, $user, $password, $dbName, $dbPort,
+	public static function newFromParams( $server, $user, $password, $dbName, $dbPort,
 		$failFunction = false, $flags = 0 )
 	{
 		return new Database( $server, $user, $password, $dbName, $dbPort, $failFunction, $flags );
