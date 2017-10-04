@@ -567,7 +567,7 @@ incompatible with PHP4
       * sudo touch /var/log/dekiwiki/deki-api.log
       * sudo chown www-data /var/log/dekiwiki/deki-api.log
       * sudo mkdir /var/www/.wapi
-      * sudo chown -r www-data /var/www
+      * sudo chown -R www-data /var/www
       * sudo su www-data
             mozroots --import --sync
             exit
